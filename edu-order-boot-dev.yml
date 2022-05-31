@@ -1,0 +1,59 @@
+﻿server:
+  port: 8007
+
+spring:
+  application:
+    name: edu-order-boot
+  shardingsphere:
+    datasource:
+      names: ds0   #配置库的名字，随意
+      ds0:
+        type: com.alibaba.druid.pool.DruidDataSource
+        driverClassName: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://192.168.59.131:3306/edu_order?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+        username: root
+        password: Wsl@123456
+    sharding:
+      tables:
+        user_course_order:   # 指定user_course_order表的数据分布情况，配置数据节点
+          actualDataNodes: ds0.user_course_order_$->{0..2}
+          tableStrategy:
+            inline:   # 指定user_course_order表的分片策略，分片策略包括分片键和分片算法
+              shardingColumn: id
+              algorithmExpression: user_course_order_$->{id % 3}
+          keyGenerator:   # 指定user_course_order表的主键生成策略为SNOWFLAKE
+            type: SNOWFLAKE  #主键生成策略为SNOWFLAKE
+            column: id  #指定主键
+  props:
+    sql:
+      show: true
+  rabbitmq: # 配置消息队列
+    host: 192.168.59.131
+    port: 5672
+    username: wsl
+    password: 123456
+    virtual-host: lagou #虚拟主机
+    queue: order_queue #消息队列
+
+#阿里云短信验证测试密钥
+ali:
+  sms:
+    signName: 大佬孙
+    templateCode: SMS_177536068
+    assessKeyId: LTAI4FwKDkeZ6StZvRxg5RDf
+    assessKeySecret: 09IMDRUia2uIC7HMXpSmM5CiXuUgvf
+
+#配置Eureka注册中心
+eureka:
+  client:
+    service-url: #定义Eureka server url
+      defaultZone: http://localhost:7001/eureka
+    register-with-eureka: true #表示是否向Eureka中心注册自己的信息，因为自己就是Eureka server,所以不需要注册，默认为true
+    fetch-registry: true #是否查询/拉取Eureka server服务注册列表，默认为true
+  instance:
+    #hostname: localhost #当前Eureka实例的主机名
+    #使用ip注册，否则会使用主机名注册了（此处考虑到对老版本的兼容，新版本经过实验都是ip）
+    prefer-ip-address: true
+    #自定义实例显示格式，加上版本号，便于多版本管理，注意是ip-address，早期版本是ipAddress
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}:@project.version@
+

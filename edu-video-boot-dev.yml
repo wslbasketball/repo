@@ -1,0 +1,24 @@
+﻿server:
+  port: 9006
+
+spring:
+  application:
+    name: edu-video-boot
+
+ali:
+  oss:
+    endpoint: oss-cn-shanghai.aliyuncs.com
+    accessKeyId: LTAI5tDDpfrQiqvoLVKm2d5t
+    accessKeySecret: fqKYLc7HYEucA6a03sv6z7a1GCCmIr
+    bucket: lagou-wsl
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:7001/eureka
+    register-with-eureka: true 
+    fetch-registry: true 
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}:@project.version@
+

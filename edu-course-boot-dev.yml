@@ -1,0 +1,35 @@
+﻿#\u914D\u7F6E\u670D\u52A1\u7AEF\u53E3
+server:
+  port: 8004
+
+spring:
+  application:
+    name: edu-course-boot
+  datasource: #数据源
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://192.168.59.131:3306/edu_course?useUnicode=true&characterEncoding=utf8&serverTimezone=UTC
+    username: root
+    password: Wsl@123456
+  redis: #配置redis
+    host: 192.168.59.131
+    port: 6379
+
+#mapper映射
+#mybatis-plus:
+  #mapper-locations: classpath:mybatis/mapper/*.xml #resource\u76EE\u5F55\u4E0B\u521B\u5EFA/mybatis/mapper
+
+#配置Eureka注册中心
+eureka:
+  client:
+    service-url: #定义Eureka server url
+      defaultZone: http://localhost:7001/eureka
+    register-with-eureka: true #表示是否向Eureka中心注册自己的信息，因为自己就是Eureka server,所以不需要注册，默认为true
+    fetch-registry: true #是否查询/拉取Eureka server服务注册列表，默认为true
+  instance:
+    #hostname: localhost #当前Eureka实例的主机名
+    #使用ip注册，否则会使用主机名注册了（此处考虑到对老版本的兼容，新版本经过实验都是ip）
+    prefer-ip-address: true
+    #自定义实例显示格式，加上版本号，便于多版本管理，注意是ip-address，早期版本是ipAddress
+    instance-id: ${spring.cloud.client.ip-address}:${spring.application.name}:${server.port}:@project.version@
+
+
